@@ -7,6 +7,7 @@ using ..Attention: MultiheadAttention
     struct TransformerBlock
 
 Transformer encoder block with multi-head attention and feedforward layers.
+Includes layer normalization and residual connections.
 """
 struct TransformerBlock
     mha::MultiheadAttention
@@ -15,12 +16,23 @@ struct TransformerBlock
     norm2::LayerNorm
 end
 
+"""
+    TransformerBlock(d_model::Int, heads::Int, ff_dim::Int)
+
+Constructs a transformer block with specified model dimension, 
+number of attention heads, and feed-forward dimension.
+"""
 function TransformerBlock(d_model::Int, heads::Int, ff_dim::Int)
     mha = MultiheadAttention(d_model, heads)
     ff = Chain(Dense(d_model, ff_dim, relu), Dense(ff_dim, d_model))
     return TransformerBlock(mha, ff, LayerNorm(d_model), LayerNorm(d_model))
 end
 
+"""
+    (block::TransformerBlock)(x::Matrix{Float32})
+
+Forward pass through transformer block with residual connections and layer norms.
+"""
 function (block::TransformerBlock)(x::Matrix{Float32})
     x = block.norm1(x .+ block.mha(x))
     x = block.norm2(x .+ block.ff(x))
@@ -43,6 +55,13 @@ end
     MaskedLM(vocab_size, d_model, heads, ff_dim, layers, pos_enc)
 
 Creates a masked language model with dynamic positional encoding.
+Parameters:
+- vocab_size: Size of vocabulary
+- d_model: Embedding dimension
+- heads: Number of attention heads
+- ff_dim: Dimension of feed-forward layer
+- layers: Number of transformer blocks
+- pos_enc: Positional encoding matrix
 """
 function MaskedLM(vocab_size::Int, d_model::Int, heads::Int, ff_dim::Int, layers::Int, pos_enc::Matrix{Float32})
     embedding = Embedding(vocab_size, d_model)
@@ -55,6 +74,7 @@ end
     (m::MaskedLM)(ids)
 
 Forward pass for a sequence of token IDs.
+Combines token embeddings with positional encodings and passes through transformer layers.
 """
 function (m::MaskedLM)(ids::Vector{Int})
     x = m.embedding(ids) .+ transpose(m.pos_enc[ids, :])
@@ -65,4 +85,3 @@ function (m::MaskedLM)(ids::Vector{Int})
 end
 
 end
-

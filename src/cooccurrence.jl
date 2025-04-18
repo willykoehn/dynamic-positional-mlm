@@ -35,4 +35,3 @@ function project_encoding(mat::Matrix{Float32}, d_model::Int)
 end
 
 end
-

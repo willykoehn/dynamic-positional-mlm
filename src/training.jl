@@ -39,4 +39,3 @@ function compute_loss(model, input, target, vocab_size)
 end
 
 end
-

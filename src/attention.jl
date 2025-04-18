@@ -16,6 +16,11 @@ struct MultiheadAttention
     head_dim::Int
 end
 
+"""
+    MultiheadAttention(d_model::Int, num_heads::Int)
+
+Construct a MultiheadAttention layer with model dimension d_model split into num_heads.
+"""
 function MultiheadAttention(d_model::Int, num_heads::Int)
     head_dim = div(d_model, num_heads)
     return MultiheadAttention(
@@ -28,6 +33,11 @@ function MultiheadAttention(d_model::Int, num_heads::Int)
     )
 end
 
+"""
+    (m::MultiheadAttention)(x::Matrix{Float32})
+
+Apply multi-head attention to input tensor x of shape (d_model, seq_len).
+"""
 function (m::MultiheadAttention)(x::Matrix{Float32})
     # x: (d_model, seq_len)
     d_model, seq_len = size(x)
@@ -67,5 +77,3 @@ function (m::MultiheadAttention)(x::Matrix{Float32})
 end
 
 end
-
-
