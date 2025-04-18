@@ -1,0 +1,22 @@
+a
+*.jl.cov
+*.jl.*
+*.ji
+*.cache
+*.h5
+*.jld
+*.jld2
+*.bson
+*.nc
+
+# VSCode & JetBrains
+.vscode/
+.idea/
+
+# Julia project internals
+Manifest.toml
+/.julia/
+
+# OS crap
+.DS_Store
+
